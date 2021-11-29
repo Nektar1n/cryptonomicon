@@ -38,6 +38,7 @@ export default {
   @keyframes rotation {
     from{
       transform: rotateX(0deg);
+
     }
     to{
       transform: rotateX(360deg);

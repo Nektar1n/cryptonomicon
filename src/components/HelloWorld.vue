@@ -267,7 +267,11 @@ export default {
   font-size: 20px;
   padding-top: 5px;
 }
+.valute::first-letter{
+  font-size: 30px;
+  text-transform: uppercase;
 
+}
 .price{
   padding-top: 30px;
   font-size: 30px;
