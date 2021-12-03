@@ -5,12 +5,15 @@
         <h1>Тикер</h1>
       </div>
       <input @keydown.enter="add" v-model="ticker" type="text" class="crypto" placeholder="Например doge или BTC">
+      <div class="filter"><button>Назад</button><button>Вперёд</button>
+        Фильтр <input v-model="filter"/>
+      </div>
       <button @click="add" type="button" class="add"><p><span id="mark">✖</span>Добавить</p></button>
     </div>
 
     <hr class="line" v-if="tickers.length!=0">
     <div class="tickers">
-    <div class="ticker" v-for="(tick,index) in tickers" :key="index" @click="select(tick),startTick=true,init()" :class="{'border':sel===tick}">
+    <div class="ticker" v-for="(tick,index) in filteredList()" :key="index" @click="select(tick),startTick=true,init()" :class="{'border':sel===tick}">
       <div class="valute">{{tick.valute}}-USD</div>
       <div class="price">{{ tick.price }}</div>
       <div class="delete" @click.stop="deleteTicker(tick)">Удалить</div>
@@ -55,7 +58,9 @@ export default {
       hour:0,
       sec:0,
       startTick:false,
-      startInterval:0
+      startInterval:0,
+      filter:'',
+      page:1
     }
   },created() {
     const tickersData=localStorage.getItem('cryptolist')
@@ -75,6 +80,9 @@ export default {
     }
   },
   methods:{
+    filteredList(){
+      return this.tickers.filter(ticker=>ticker.valute.includes(this.filter))
+    },
     subscribeToUpdate(currentTicker){
       setInterval(async ()=>{
         const f=await fetch(`https://min-api.cryptocompare.com/data/price?fsym=${currentTicker.valute}&tsyms=USD&api_key=b2a0c50f320ffb15bb2144476856e07ddfde53ea81f697fe8792730fff8f5fb2`)
@@ -93,9 +101,11 @@ export default {
       this.tickers.push(newTicker)
       localStorage.setItem('cryptolist',JSON.stringify(this.tickers ))
       this.subscribeToUpdate(newTicker)
+      this.filter=''
     },
     deleteTicker(ticker){
       this.tickers=this.tickers.filter(t=>t!=ticker)
+      localStorage.setItem('cryptolist',JSON.stringify(this.tickers ))
     },
     normalizeGraph(){
       const maxValue=Math.max(...this.graph)
@@ -165,7 +175,7 @@ export default {
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style>
 .line{
-  margin-top: 50px;
+  margin-top: 90px;
 }
 .form{
   position: relative;
@@ -268,7 +278,7 @@ export default {
   padding-top: 5px;
 }
 .valute::first-letter{
-  font-size: 30px;
+  font-size: 20px;
   text-transform: uppercase;
 
 }
@@ -377,5 +387,15 @@ html{
   .priceCoin{
     left: 20%;
   }
+}
+/*----------------------------*/
+.filter{
+  margin-top: 15px;
+}
+.filter>button{
+  background: none;
+  border: 2px solid teal;
+  font-size: 20px;
+  margin: 10px;
 }
 </style>
