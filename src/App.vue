@@ -18,11 +18,13 @@ export default {
 }
 </script>
 
-<style scoped>
-  #app{
-    box-sizing: border-box;
-    margin: 0;
-  }
+<style>
+body{
+  height: 100vh;
+  width: 100vw;
+  background-color: darkslategrey;
+}
+
 .btc{
   position: absolute;
   width: 60px;
@@ -30,6 +32,7 @@ export default {
   top: 30px;
   animation: rotation 10s infinite;
 }
+
 @media (max-width: 600px) {
   .btc{
     width: 30px;

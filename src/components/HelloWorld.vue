@@ -5,8 +5,10 @@
         <h1>Тикер</h1>
       </div>
       <input @keydown.enter="add" v-model="ticker" type="text" class="crypto" placeholder="Например doge или BTC">
-      <div class="filter"><button>Назад</button><button>Вперёд</button>
-        Фильтр <input v-model="filter"/>
+      <div class="filter">
+        <input id="inputFilter" type="text" placeholder="Отфильтровать тикеры" v-model="filter"/>
+        <button class="btnFilter" @click="page=page-1" v-if="page>1">Назад</button>
+        <button class="btnFilter" @click="page=page+1" v-if="hasNextPage">Вперёд</button>
       </div>
       <button @click="add" type="button" class="add"><p><span id="mark">✖</span>Добавить</p></button>
     </div>
@@ -60,7 +62,8 @@ export default {
       startTick:false,
       startInterval:0,
       filter:'',
-      page:1
+      page:1,
+      hasNextPage: true,
     }
   },created() {
     const tickersData=localStorage.getItem('cryptolist')
@@ -81,7 +84,13 @@ export default {
   },
   methods:{
     filteredList(){
-      return this.tickers.filter(ticker=>ticker.valute.includes(this.filter))
+      const start=(this.page-1)*6;
+      const end=this.page*6
+      const filteredTickers= this.tickers
+          .filter(ticker=>ticker.valute.includes(this.filter));
+      this.hasNextPage=filteredTickers.length>end
+      return filteredTickers.slice(start,end)
+
     },
     subscribeToUpdate(currentTicker){
       setInterval(async ()=>{
@@ -168,6 +177,10 @@ export default {
       this.min=0
       this.hour=0
     }
+  },watch:{
+    filter(){
+      this.page=1
+    }
   }
 }
 </script>
@@ -245,7 +258,7 @@ export default {
 }
 .ticker{
   margin: 10px;
-  width: 180px;
+  width: 280px;
   height: 180px;
   background-color: steelblue;
   text-align: center;
@@ -274,17 +287,17 @@ export default {
   border: solid 4px darkslategrey;
 }
 .valute{
-  font-size: 20px;
+  font-size: 25px;
   padding-top: 5px;
 }
 .valute::first-letter{
-  font-size: 20px;
+  font-size: 30px;
   text-transform: uppercase;
 
 }
 .price{
   padding-top: 30px;
-  font-size: 30px;
+  font-size: 35px;
   cursor: pointer;
   transition: all .5s ease;
 }
@@ -300,7 +313,7 @@ html{
   background-color: blue;
   width: 60%;
   justify-content: center;
-  margin: 50px auto;
+  margin: 40px auto;
   color: aqua;
   border-radius: 20px;
   cursor: pointer;
@@ -390,12 +403,25 @@ html{
 }
 /*----------------------------*/
 .filter{
-  margin-top: 15px;
+  margin: 15px 10px 2px 2px;
 }
 .filter>button{
   background: none;
   border: 2px solid teal;
   font-size: 20px;
-  margin: 10px;
+  margin: 5px;
+}
+#inputFilter{
+  height: 25px;
+}
+.btnFilter{
+  color: darkslategrey;
+  transition: all .2s ease;
+  cursor: pointer;
+}
+.btnFilter:hover{
+  color: black;
+  transform: scale(1.05);
+  background-color: #6f946f;
 }
 </style>
